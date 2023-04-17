@@ -1,9 +1,9 @@
-targetScope='subscription'
+targetScope='resourceGroup'
 
 @description('The resourcegroup for all resources.')
 param ResourceGroup string
 param environment string
-var location = deployment().location
+var location = resourceGroup().location
 
 var resourceSuffix = '${environment}-${location}-contoso001'
 
