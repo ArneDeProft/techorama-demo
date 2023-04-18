@@ -46,6 +46,7 @@ jobs:
     - name: 'Resolve Project Dependencies Using Dotnet'
       shell: pwsh # For Linux, use bash
       run: |
+        ls 
         dotnet build --configuration Release --output ./output
         popd
 
