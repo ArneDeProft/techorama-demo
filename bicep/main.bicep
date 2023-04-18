@@ -15,17 +15,6 @@ var ehName = 'eh-${resourceSuffix}'
 var appNameLA = 'appnamela-${resourceSuffix}'
 var appNameCI = 'appnameci-${resourceSuffix}'
 
- module apimModule 'apim/apim.bicep'  = {
-    name: 'apimDeploy'
-    scope: resourceGroup(ResourceGroup)
-    params: {
-      apiminstances: apiminstances
-      location: location
-      resourceSuffix: resourceSuffix
-    }
-  }
-
-
 module ehModule 'eventhub/eventhub.bicep'  = {
   name: 'ehDeploy'
   scope: resourceGroup(ResourceGroup)
@@ -33,6 +22,7 @@ module ehModule 'eventhub/eventhub.bicep'  = {
     ehName: ehName
     location: location
   }
+  
 }
 
 module functionlaModule 'functions/function.bicep'  = {
@@ -43,6 +33,20 @@ module functionlaModule 'functions/function.bicep'  = {
     appNameCI: appNameCI
     location: location
     storageAccountName: storageAccountName
+    ehconn: ehModule.outputs.conn
   }
+  dependsOn:[ehModule]
 }
 
+module apimModule 'apim/apim.bicep'  = {
+  name: 'apimDeploy'
+  scope: resourceGroup(ResourceGroup)
+  params: {
+    apiminstances: apiminstances
+    location: location
+    resourceSuffix: resourceSuffix
+    ehName: ehName
+    ehconn:ehModule.outputs.conn
+  }
+  dependsOn:[ehModule]
+}

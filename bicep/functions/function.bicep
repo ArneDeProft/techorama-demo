@@ -27,6 +27,8 @@ var hostingPlanName = appNameLA
 var functionAppNameCI = appNameCI
 var functionWorkerRuntime = runtime
 
+param ehconn string
+
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = {
   name: storageAccountName
   location: location
@@ -85,6 +87,10 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: functionWorkerRuntime
         }
+        {
+          name: 'EventHubConnection__connectionstring'
+          value: ehconn
+        }
       ]
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
@@ -127,6 +133,10 @@ resource functionAppCI 'Microsoft.Web/sites@2021-03-01' = {
         {
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: functionWorkerRuntime
+        }
+        {
+          name: 'EventHubConnection__connectionstring'
+          value: ehconn
         }
       ]
       ftpsState: 'FtpsOnly'

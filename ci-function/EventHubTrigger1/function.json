@@ -1,0 +1,14 @@
+﻿{
+  "bindings": [
+    {
+      "type": "eventHubTrigger",
+      "name": "eventHubMessages",
+      "direction": "in",
+      "eventHubName": "eh-qa-westeurope-contoso001",
+      "connection": "EventHubConnection__connectionstring",
+      "cardinality": "many",
+      "consumerGroup": "thirdparyconsumer",
+      "dataType": "string"
+    }
+  ]
+}

@@ -26,6 +26,18 @@ param location string = resourceGroup().location
 
 param resourceSuffix string
 
+param myLogger string = 'mylogger'
+
+param ehName string
+
+param ehconn string
+
+
+
+resource eh 'Microsoft.EventHub/namespaces/eventhubs@2022-01-01-preview' existing ={
+  name: ehName
+}
+
 
 /*
  * Resources
@@ -45,3 +57,44 @@ resource apimName_resource 'Microsoft.ApiManagement/service@2020-12-01' = [for i
     publisherName: publisherName
   }
 }]
+
+resource logger 'Microsoft.ApiManagement/service/loggers@2021-01-01-preview' = [for i in range (0, length(apiminstances)): {
+  name: '${myLogger}-${apiminstances[i]}'
+  properties: {
+    loggerType: 'azureEventHub'
+    credentials: {
+      connectionString: ehconn
+      name: eh.name
+    }
+  }
+  parent: apimName_resource[i]
+}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

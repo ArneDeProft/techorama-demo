@@ -4,6 +4,9 @@ param ehName string
 @description('Specifies the Azure location for all resources.')
 param location string = resourceGroup().location
 
+param consumerGroups array = ['thirdparyConsumer','sentinelConsumer','generelLogsConsumer']
+
+
 @description('Specifies the messaging tier for Event Hub Namespace.')
 @allowed([
   'Basic'
@@ -36,3 +39,23 @@ resource eventHub 'Microsoft.EventHub/namespaces/eventhubs@2021-11-01' = {
     partitionCount: 1
   }
 }
+
+resource consumerGroup 'Microsoft.EventHub/namespaces/eventhubs/consumergroups@2021-06-01-preview' = [for group in consumerGroups: {
+  name: '${group}'
+  parent: eventHub
+}]
+
+resource eventHubAuthorizationRule 'Microsoft.EventHub/namespaces/authorizationRules@2021-06-01-preview' = {
+  name: 'eventHubAuthorizationRule'
+  parent: eventHubNamespace
+  properties: {
+    rights: [
+      'Listen'
+      'Send'
+    ]
+  }
+}
+
+var eventHubNamespaceConnectionString = listKeys(eventHubAuthorizationRule.id, eventHubAuthorizationRule.apiVersion).primaryConnectionString
+output conn string = eventHubNamespaceConnectionString
+
