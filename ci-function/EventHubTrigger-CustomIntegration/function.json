@@ -5,9 +5,9 @@
       "name": "eventHubMessages",
       "direction": "in",
       "eventHubName": "eh-qa-westeurope-contoso001",
-      "connection": "EventHubConnection__connectionstring",
-      "cardinality": "many",
-      "consumerGroup": "thirdparyconsumer",
+      "connection": "EventHubConnection_connectionstring",
+      "cardinality": "one",
+      "consumerGroup": "thirdpartyconsumer",
       "dataType": "string"
     }
   ]
