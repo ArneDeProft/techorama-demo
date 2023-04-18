@@ -4,17 +4,45 @@ targetScope='resourceGroup'
 param ResourceGroup string
 param environment string
 var location = resourceGroup().location
+param storageAccountName string
+
 
 var resourceSuffix = '${environment}-${location}-contoso001'
 
 // Resource Names
-var apimName = 'apim-${resourceSuffix}'
+param apiminstances array
+var ehName = 'eh-${resourceSuffix}'
+var appNameLA = 'appnamela-${resourceSuffix}'
+var appNameCI = 'appnameci-${resourceSuffix}'
 
-module apimModule 'apim/apim.bicep'  = {
-  name: 'apimDeploy'
+ module apimModule 'apim/apim.bicep'  = {
+    name: 'apimDeploy'
+    scope: resourceGroup(ResourceGroup)
+    params: {
+      apiminstances: apiminstances
+      location: location
+      resourceSuffix: resourceSuffix
+    }
+  }
+
+
+module ehModule 'eventhub/eventhub.bicep'  = {
+  name: 'ehDeploy'
   scope: resourceGroup(ResourceGroup)
   params: {
-    apimName: apimName
+    ehName: ehName
     location: location
   }
 }
+
+module functionlaModule 'functions/function.bicep'  = {
+  name: 'funclaDeploy'
+  scope: resourceGroup(ResourceGroup)
+  params: {
+    appNameLA: appNameLA
+    appNameCI: appNameCI
+    location: location
+    storageAccountName: storageAccountName
+  }
+}
+

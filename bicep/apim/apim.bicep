@@ -5,7 +5,7 @@ targetScope='resourceGroup'
 */
 
 @description('The name of the API Management resource to be created.')
-param apimName string
+param apiminstances array
 
 @description('The email address of the publisher of the APIM resource.')
 @minLength(1)
@@ -24,13 +24,16 @@ param capacity int = 1
 @description('Location for Azure resources.')
 param location string = resourceGroup().location
 
+param resourceSuffix string
+
 
 /*
  * Resources
 */
 
-resource apimName_resource 'Microsoft.ApiManagement/service@2020-12-01' = {
-  name: apimName
+resource apimName_resource 'Microsoft.ApiManagement/service@2020-12-01' = [for instance in apiminstances: {
+
+  name: 'apim-${resourceSuffix}-${instance}'
   location: location
   sku:{
     capacity: capacity
@@ -41,4 +44,4 @@ resource apimName_resource 'Microsoft.ApiManagement/service@2020-12-01' = {
     publisherEmail: publisherEmail
     publisherName: publisherName
   }
-}
+}]
