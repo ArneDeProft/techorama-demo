@@ -88,7 +88,7 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
           value: functionWorkerRuntime
         }
         {
-          name: 'EventHubConnection__connectionstring'
+          name: 'EventHubConnection_connectionstring'
           value: ehconn
         }
       ]
@@ -135,7 +135,7 @@ resource functionAppCI 'Microsoft.Web/sites@2021-03-01' = {
           value: functionWorkerRuntime
         }
         {
-          name: 'EventHubConnection__connectionstring'
+          name: 'EventHubConnection_connectionstring'
           value: ehconn
         }
       ]
