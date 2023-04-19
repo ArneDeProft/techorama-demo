@@ -1,0 +1,10 @@
+{
+  "properties": {
+    "credentials": {
+      "name": "eh-qa-westeurope-contoso001",
+      "connectionString": "{{Logger-Credentials--643ee0f546346117f85e1bca}}"
+    },
+    "isBuffered": true,
+    "loggerType": "azureEventHub"
+  }
+}
