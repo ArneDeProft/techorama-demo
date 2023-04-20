@@ -54,7 +54,7 @@ jobs:
           echo "::set-output name=instance::$value"
       id: set-variables
     outputs:
-      instance: ${{ steps.set-variables.outputs.instance }}
+      instance: set-variables
        
   get-commit:
     runs-on: ubuntu-latest
