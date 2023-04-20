@@ -4,7 +4,7 @@ on:
   # Triggers the workflow on pull request events but only for the main branch
   pull_request:
     branches: [main]
-    types: [closed]
+    types: [closed, labeled]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -28,21 +28,51 @@ on:
           
 jobs:
 
-  build-push-site:
-    if: ${{ (github.event.pull_request.merged == true) && (contains(github.event.pull_request.labels.*.name, 'instance')) }}
+  set-variables:
     runs-on: ubuntu-latest
     steps:
-      - name: condition 1
-        if: "contains(github.event.pull_request.labels.*.name, 'instance-a')"
-        run: ${{ APIM_INSTANCE="a" }}
 
-      - name: condition 2
-        if: "contains(github.event.pull_request.labels.*.name, 'instance-b')"
-        run: ${{ APIM_INSTANCE="b" }}
-        
-      - name: condition 3
-        if: "contains(github.event.pull_request.labels.*.name, 'instance-group')"
-        run: ${{ APIM_INSTANCE="group" }}
+
+
+- name: Get input or label value
+  run: |
+    if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+      value="${{ github.event.inputs.APIM_INSTANCE }}"
+    elif (contains( github.event.pull_request.labels.*.name, 'instance-a')==true); then
+      label="a"
+    elif (contains( github.event.pull_request.labels.*.name, 'instance-b')==true); then
+      label="b"
+    elif (contains( github.event.pull_request.labels.*.name, 'instance-group')==true); then
+      label="group"
+    fi
+    echo "The value is: $value"
+    echo ${{ github.event_name }}
+    echo ${{ github.event.pull_request.labels }}
+    echo "::set-output name=instance::$value"
+  outputs:
+    instance: $value
+
+
+
+
+
+    - name: Get input or label value
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          value="${{ github.event.inputs.APIM_INSTANCE }}"
+        elif (contains( github.event.pull_request.labels.*.name, 'instance-a')==true); then
+         label="a"
+        elif (contains( github.event.pull_request.labels.*.name, 'instance-b')==true); then
+          label="b"
+        elif (contains( github.event.pull_request.labels.*.name, 'instance-group')==true); then
+          label="group"
+        fi
+          echo "The value is: $value"
+          echo ${{ github.event_name }}
+          echo ${{ github.event.pull_request.labels }}
+          echo "::set-output name=instance::$value"
+    outputs:
+      instance: $value
        
   get-commit:
     runs-on: ubuntu-latest
@@ -61,7 +91,7 @@ jobs:
     needs: get-commit
     uses: ./.github/workflows/run-publisher-with-env.yaml
     with:
-      API_MANAGEMENT_ENVIRONMENT: ${{ APIM_INSTANCE }}
+      API_MANAGEMENT_ENVIRONMENT: ${{ needs.set-variables.outputs.instance }}
       API_MANAGEMENT_SERVICE_OUTPUT_FOLDER_PATH: apimartifacts # change this to the artifacts folder
     secrets: inherit
 
@@ -70,7 +100,7 @@ jobs:
     needs: [get-commit]
     uses: ./.github/workflows/run-publisher-with-env.yaml
     with:
-      API_MANAGEMENT_ENVIRONMENT: ${{ APIM_INSTANCE }}
+      API_MANAGEMENT_ENVIRONMENT: ${{ needs.set-variables.outputs.instance }}
       CONFIGURATION_YAML_PATH: configuration.prod.yaml # make sure the file is available at the root
       API_MANAGEMENT_SERVICE_OUTPUT_FOLDER_PATH: apimartifacts # change this to the artifacts folder
       COMMIT_ID: ${{ needs.get-commit.outputs.commit_id }}
@@ -81,7 +111,7 @@ jobs:
     needs: [get-commit, Push-Changes-To-APIM-Dev-Without-Commit-ID]
     uses: ./.github/workflows/run-publisher-with-env.yaml
     with:
-      API_MANAGEMENT_ENVIRONMENT: ${{ APIM_INSTANCE }}
+      API_MANAGEMENT_ENVIRONMENT: ${{ needs.set-variables.outputs.instance }}
       CONFIGURATION_YAML_PATH: configuration.prod.yaml # make sure the file is available at the root
       API_MANAGEMENT_SERVICE_OUTPUT_FOLDER_PATH: apimartifacts # change this to the artifacts folder
     secrets: inherit
