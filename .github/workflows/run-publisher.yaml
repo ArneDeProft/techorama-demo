@@ -36,7 +36,7 @@ jobs:
     steps:
     - name: Get input or label value
       run: |
-        value="b"
+        value="a"
         if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
           value="${{ github.event.inputs.APIM_INSTANCE }}"
         elif "instance-a" in github.event.pull_request.labels.*.name; then
