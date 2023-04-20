@@ -32,30 +32,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Save job output OR workflow dispatch to Env
-        run: |
-          if [[ ${{ github.event_name == 'workflow_dispatch' }} == true ]]; then
-            apiminstance=${{ inputs.APIM_INSTANCE }}
-          fi
-          echo "apiminstance=$apiminstance" >> $GITHUB_ENV
-      - name: Use the variable from previous step
-        run: echo ${{ env.apiminstance }}
-
-  build-push-site:
-    if: ${{ (github.event.pull_request.merged == true) && (contains(github.event.pull_request.labels.*.name, 'instance')) }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: condition 1
-        if: "contains(github.event.pull_request.labels.*.name, 'instance-a')"
-        run: echo "apiminstance=a" >> $GITHUB_ENV
-
-      - name: condition 2
-        if: "contains(github.event.pull_request.labels.*.name, 'instance-b')"
-        run: echo "apiminstance=b" >> $GITHUB_ENV
-        
-      - name: condition 3
-        if: "contains(github.event.pull_request.labels.*.name, 'instance-group')"
-        run: echo "apiminstance=group" >> $GITHUB_ENV
+    - name: Get input or label value
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          value="${{ github.event.inputs.APIM_INSTANCE }}"
+        elif echo "${{ github.event.pull_request.labels }}" | grep -q 'instance-a'; then
+         label="a"
+        elif echo "${{ github.event.pull_request.labels }}" | grep -q 'instance-b'; then
+          label="b"
+        elif echo "${{ github.event.pull_request.labels }}" | grep -q 'instance-group'; then
+          label="group"
+        fi
+          echo "The value is: $value"
+          echo "::set-output name=instance::$value"
+    outputs:
+      instance: $value
        
   get-commit:
     runs-on: ubuntu-latest
