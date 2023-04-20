@@ -36,7 +36,7 @@ jobs:
         if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
           value="${{ github.event.inputs.APIM_INSTANCE }}"
         elif (contains( github.event.pull_request.labels.*.name, "instance-a")==true); then
-         label="a"
+          label="a"
         elif (contains( github.event.pull_request.labels.*.name, "instance-b")==true); then
           label="b"
         elif (contains( github.event.pull_request.labels.*.name, "instance-group")==true); then
