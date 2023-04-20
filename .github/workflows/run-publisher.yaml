@@ -44,6 +44,7 @@ jobs:
           label="group"
         fi
           echo "The value is: $value"
+          echo ${{ github.event_name }}
           echo "::set-output name=instance::$value"
     outputs:
       instance: $value
