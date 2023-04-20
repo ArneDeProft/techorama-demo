@@ -4,7 +4,7 @@ on:
   # Triggers the workflow on pull request events but only for the main branch
   pull_request:
     branches: [main]
-    types: [closed]
+    types: [closed, labeled]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -36,11 +36,11 @@ jobs:
       run: |
         if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
           value="${{ github.event.inputs.APIM_INSTANCE }}"
-        elif (any(label['name'] == "instance-a" for label in github.event.pull_request.labels)); then
+        elif (contains( github.event.pull_request.labels.*.name, 'instance-a')); then
          label="a"
-        elif (any(label['name'] == "instance-b" for label in github.event.pull_request.labels)); then
+        elif (contains( github.event.pull_request.labels.*.name, 'instance-b')); then
           label="b"
-        elif (any(label['name'] == "instance-group" for label in github.event.pull_request.labels))'; then
+        elif (contains( github.event.pull_request.labels.*.name, 'instance-group'))'; then
           label="group"
         fi
           echo "The value is: $value"
