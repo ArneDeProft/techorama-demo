@@ -34,13 +34,14 @@ jobs:
 
     - name: Get input or label value
       run: |
+        labels = github.event.pull_request.labels
         if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
           value="${{ github.event.inputs.APIM_INSTANCE }}"
-        elif (contains(github.event.pull_request.labels.*.name, 'instance-a'); then
+        elif (any(label['name'] == "instance-a" for label in labels)); then
          label="a"
-        elif (contains(github.event.pull_request.labels.*.name, 'instance-b'); then
+        elif (any(label['name'] == "instance-b" for label in labels)); then
           label="b"
-        elif (contains(github.event.pull_request.labels.*.name, 'instance-group')'; then
+        elif (any(label['name'] == "instance-group" for label in labels))'; then
           label="group"
         fi
           echo "The value is: $value"
