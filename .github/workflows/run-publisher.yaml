@@ -17,8 +17,33 @@ on:
         options:
           - "publish-artifacts-in-last-commit"
           - "publish-all-artifacts-in-repo"
-
+      APIM_INSTANCE:
+        description: 'Choose the APIM instance to deploy to'
+        required: true
+        type: choice
+        options:
+          - "instance-a"
+          - "instance-b"
+          - "instance-group"
+          
 jobs:
+
+  build-push-site:
+    if: ${{ (github.event.pull_request.merged == true) && (contains(github.event.pull_request.labels.*.name, 'instance')) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: condition 1
+        if: "contains(github.event.pull_request.labels.*.name, 'instance-a')"
+        run: ${{ APIM_INSTANCE=instance-a }}
+
+      - name: condition 2
+        if: "contains(github.event.pull_request.labels.*.name, 'instance-b')"
+        run: ${{ APIM_INSTANCE=instance-b }}
+        
+      - name: condition 3
+        if: "contains(github.event.pull_request.labels.*.name, 'instance-group')"
+        run: ${{ APIM_INSTANCE=instance-group }}
+       
   get-commit:
     runs-on: ubuntu-latest
     steps:
