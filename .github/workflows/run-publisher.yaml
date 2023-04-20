@@ -47,15 +47,15 @@ jobs:
     steps:
       - name: condition 1
         if: "contains(github.event.pull_request.labels.*.name, 'instance-a')"
-        run: ${{ env.apiminstance="a" }}
+        run: echo "apiminstance=a" >> $GITHUB_ENV
 
       - name: condition 2
         if: "contains(github.event.pull_request.labels.*.name, 'instance-b')"
-        run: ${{ env.apiminstance="b" }}
+        run: echo "apiminstance=b" >> $GITHUB_ENV
         
       - name: condition 3
         if: "contains(github.event.pull_request.labels.*.name, 'instance-group')"
-        run: ${{ env.apiminstance="group" }}
+        run: echo "apiminstance=group" >> $GITHUB_ENV
        
   get-commit:
     runs-on: ubuntu-latest
@@ -74,7 +74,7 @@ jobs:
     needs: get-commit
     uses: ./.github/workflows/run-publisher-with-env.yaml
     with:
-      API_MANAGEMENT_ENVIRONMENT: ${{ APIM_INSTANCE }}
+      API_MANAGEMENT_ENVIRONMENT: ${{ env.apiminstance }}
       API_MANAGEMENT_SERVICE_OUTPUT_FOLDER_PATH: apimartifacts # change this to the artifacts folder
     secrets: inherit
 
@@ -83,7 +83,7 @@ jobs:
     needs: [get-commit]
     uses: ./.github/workflows/run-publisher-with-env.yaml
     with:
-      API_MANAGEMENT_ENVIRONMENT: ${{ APIM_INSTANCE }}
+      API_MANAGEMENT_ENVIRONMENT: ${{ env.apiminstance }}
       CONFIGURATION_YAML_PATH: configuration.prod.yaml # make sure the file is available at the root
       API_MANAGEMENT_SERVICE_OUTPUT_FOLDER_PATH: apimartifacts # change this to the artifacts folder
       COMMIT_ID: ${{ needs.get-commit.outputs.commit_id }}
@@ -94,7 +94,7 @@ jobs:
     needs: [get-commit, Push-Changes-To-APIM-Dev-Without-Commit-ID]
     uses: ./.github/workflows/run-publisher-with-env.yaml
     with:
-      API_MANAGEMENT_ENVIRONMENT: ${{ APIM_INSTANCE }}
+      API_MANAGEMENT_ENVIRONMENT: ${{ env.apiminstance }}
       CONFIGURATION_YAML_PATH: configuration.prod.yaml # make sure the file is available at the root
       API_MANAGEMENT_SERVICE_OUTPUT_FOLDER_PATH: apimartifacts # change this to the artifacts folder
     secrets: inherit
