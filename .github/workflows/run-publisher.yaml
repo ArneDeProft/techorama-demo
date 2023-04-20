@@ -28,6 +28,9 @@ on:
           
 jobs:
 
+# write a github action that sets the value of the APIM_INSTANCE variable based on the input or label
+
+
   set-variables:
     runs-on: ubuntu-latest
     steps:
@@ -35,17 +38,17 @@ jobs:
       run: |
         if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
           value="${{ github.event.inputs.APIM_INSTANCE }}"
-        elif [contains( github.event.pull_request.labels.*.name, "instance-a")]; then
-          label="a"
-        elif [contains( github.event.pull_request.labels.*.name, "instance-b")]; then
-          label="b"
-        elif [contains( github.event.pull_request.labels.*.name, "instance-group")]; then
-          label="group"
+        elif contains( github.event.pull_request.labels.*.name, "instance-a"); then
+          value="a"
+        elif contains( github.event.pull_request.labels.*.name, "instance-b"); then
+          value="b"
+        elif contains( github.event.pull_request.labels.*.name, "instance-group"); then
+          value="group"
         fi
           echo "The value is: $value"
           echo ${{ github.event_name }}
           echo ${{ github.event.pull_request.labels }}
-          echo ${{ github.event.pull_request.labels[0] }}
+          echo ${{ github.event.pull_request.labels }}
           echo ${{ github.event.pull_request.labels[1] }}
           echo "::set-output name=instance::$value"
     outputs:
