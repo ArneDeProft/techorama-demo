@@ -36,11 +36,11 @@ jobs:
       run: |
         if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
           value="${{ github.event.inputs.APIM_INSTANCE }}"
-        elif echo "${{ github.event.pull_request.labels }}" | grep -q 'instance-a'; then
+        elif (contains(github.event.pull_request.labels.*.name, 'instance-a'); then
          label="a"
-        elif echo "${{ github.event.pull_request.labels }}" | grep -q 'instance-b'; then
+        elif (contains(github.event.pull_request.labels.*.name, 'instance-b'); then
           label="b"
-        elif echo "${{ github.event.pull_request.labels }}" | grep -q 'instance-group'; then
+        elif (contains(github.event.pull_request.labels.*.name, 'instance-group')'; then
           label="group"
         fi
           echo "The value is: $value"
