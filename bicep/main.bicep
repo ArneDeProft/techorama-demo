@@ -14,6 +14,7 @@ param apiminstances array
 var ehName = 'eh-${resourceSuffix}'
 var appNameLA = 'appnamela-${resourceSuffix}'
 var appNameCI = 'appnameci-${resourceSuffix}'
+var dbwName = 'dbw-${resourceSuffix}'
 
 module ehModule 'eventhub/eventhub.bicep'  = {
   name: 'ehDeploy'
@@ -49,4 +50,15 @@ module apimModule 'apim/apim.bicep'  = {
     ehconn:ehModule.outputs.conn
   }
   dependsOn:[ehModule]
+}
+
+
+module dbwModule 'databricks/databricks.bicep'  = {
+  name: 'dbwDeploy'
+  scope: resourceGroup(ResourceGroup)
+  params: {
+    workspaceName: dbwName
+    location: location
+  }
+  
 }
