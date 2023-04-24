@@ -34,7 +34,8 @@ jobs:
   set-variables:
     runs-on: ubuntu-latest
     steps:
-    - name: Get input or label value
+    - name: Get input or label value      
+      id: set-variables1
       run: |
         value="a"
         if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -48,15 +49,12 @@ jobs:
         fi
           echo "The value is: $value"
 
-          echo "instance=$(value)" >> $GITHUB_OUTPUT
+          echo "instance=$(echo $value)" >> $GITHUB_OUTPUT
           echo ${{ steps.set-variables1.outputs.instance }}
-      id: set-variables1
-      with:
-        instance: $value
+
     outputs:
       instance: ${{ steps.set-variables1.outputs.instance }}
 
-  # write a github action that creates a variable with a value a and then outputs it
 
 
        
