@@ -52,10 +52,10 @@ jobs:
           echo ${{ github.event.pull_request.labels[0] }}
           echo ${{ github.event.pull_request.labels[1] }}
           echo "::set-output name=instance::$value"
-          echo "instance=$value" >> $GITHUB_OUTPUT
-      id: set-variables
+          echo "instance=$value" >> "$GITHUB_OUTPUT"
+      id: set-variables1
     outputs:
-      instance: ${{ steps.set-variables.outputs.instance}}
+      instance: ${{ steps.set-variables.set-variables1.outputs.instance }}
        
   get-commit:
     runs-on: ubuntu-latest
@@ -66,7 +66,7 @@ jobs:
         id: commit
         run: |
           echo "::set-output name=commit_id::${{ github.sha }}"
-          echo "test: ${{ steps.set-variables.outputs.instance}}" 
+          echo "test: ${{ needs.set-variables.set-variables1.outputs.instance }}" 
     outputs:
       commit_id: ${{ steps.commit.outputs.commit_id }}
   
@@ -85,7 +85,7 @@ jobs:
     needs: [get-commit]
     uses: ./.github/workflows/run-publisher-with-env.yaml
     with:
-      API_MANAGEMENT_ENVIRONMENT: ${{ needs.set-variables.outputs.instance }}
+      API_MANAGEMENT_ENVIRONMENT: ${{ needs.set-variables.set-variables1.outputs.instance }}
       CONFIGURATION_YAML_PATH: configuration.prod.yaml # make sure the file is available at the root
       API_MANAGEMENT_SERVICE_OUTPUT_FOLDER_PATH: apimartifacts # change this to the artifacts folder
       COMMIT_ID: ${{ needs.get-commit.outputs.commit_id }}
