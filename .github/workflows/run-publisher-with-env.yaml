@@ -28,7 +28,7 @@ jobs:
     steps:
 
       - name: Output Inputs
-        run: echo "${{ toJSON(github.event.inputs) }}"
+        run: echo "${{ toJSON(inputs) }}"
     
       # Run Spectral
       - uses: actions/setup-node@v3
