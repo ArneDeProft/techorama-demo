@@ -54,8 +54,35 @@ jobs:
 
     outputs:
       instance: ${{ steps.set-variables1.outputs.instance }}
-
-
+  
+  via-python: 
+    runs-on: ubuntu-latest
+    steps:
+    - name: Display the path
+      run: |    
+        const apiminstance = "";
+        if core.getInput('APIM_INSTANCE') != ""
+          match core.getInput('APIM_INSTANCE')
+            case "a":
+              apiminstance = "a";
+            case "b":
+              apiminstance = "b";
+            case "group":
+              apiminstance = "group";
+        else:
+          labels = context.payload['pull_request']['labels']
+          for label in labels:
+            if label['name'] == 'instance-a':
+              apiminstance = "a"
+              break
+            elif label['name'] == 'instance-b':
+              apiminstance = "b"
+              break
+            elif label['name'] == 'instance-group':
+              apiminstance = "group"
+              break
+        print('value is:', apiminstance)
+      shell: python
 
        
   get-commit:
