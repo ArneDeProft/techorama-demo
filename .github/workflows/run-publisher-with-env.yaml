@@ -150,6 +150,7 @@ jobs:
           if ("${{ runner.os }}" -like "*linux*")
           {
             Write-Information "Setting file permissions..."
+            Write-Information {{ env.azure_client_id }}
             & chmod +x "$destinationFilePath"
             if ($LASTEXITCODE -ne 0) { throw "Setting file permissions failed."}
           }
