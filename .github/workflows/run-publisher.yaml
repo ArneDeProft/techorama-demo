@@ -36,7 +36,7 @@ jobs:
     steps:
     - name: Get input or label value
       run: |
-        value="b"
+        value="a"
         if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
           value="${{ github.event.inputs.APIM_INSTANCE }}"
         elif "instance-a" in github.event.pull_request.labels.*.name; then
@@ -54,16 +54,18 @@ jobs:
           echo "::set-output name=instance::$value"
       id: set-variables
     outputs:
-      instance: set-variables
+      instance: ${{ steps.set-variables.outputs.instance}}
        
   get-commit:
     runs-on: ubuntu-latest
+    needs: set-variables
     steps:
       # Set the COMMIT_ID env variable
       - name: Set the Commit Id
         id: commit
         run: |
           echo "::set-output name=commit_id::${{ github.sha }}"
+          echo ${{ needs.set-variables.outputs.instance }}
     outputs:
       commit_id: ${{ steps.commit.outputs.commit_id }}
   
