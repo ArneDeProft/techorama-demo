@@ -65,6 +65,7 @@ jobs:
         id: commit
         run: |
           echo "::set-output name=commit_id::${{ github.sha }}"
+          echo "test: ${{ steps.set-variables.outputs.instance}}" 
     outputs:
       commit_id: ${{ steps.commit.outputs.commit_id }}
   
