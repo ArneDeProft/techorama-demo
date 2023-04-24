@@ -26,6 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: "b"
     steps:
+
+      - name: Output Inputs
+        run: echo "${{ toJSON(github.event.inputs) }}"
+    
       # Run Spectral
       - uses: actions/setup-node@v3
         with:
@@ -77,7 +81,6 @@ jobs:
           if ("${{ runner.os }}" -like "*linux*")
           {
             Write-Information "Setting file permissions..."
-            Write-Information ${{ env.azure_client_id }}
             & chmod +x "$destinationFilePath"
             if ($LASTEXITCODE -ne 0) { throw "Setting file permissions failed."}
           }
@@ -150,8 +153,6 @@ jobs:
           if ("${{ runner.os }}" -like "*linux*")
           {
             Write-Information "Setting file permissions..."
-            Write-Information ${{ inputs.API_MANAGEMENT_ENVIRONMENT }}
-            Write-Information ${{ env.azure_client_id }}
             & chmod +x "$destinationFilePath"
             if ($LASTEXITCODE -ne 0) { throw "Setting file permissions failed."}
           }
