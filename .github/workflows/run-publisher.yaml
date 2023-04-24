@@ -52,6 +52,7 @@ jobs:
           echo ${{ github.event.pull_request.labels[0] }}
           echo ${{ github.event.pull_request.labels[1] }}
           echo "::set-output name=instance::$value"
+          echo "::set-output name=instance::b"
       id: set-variables
     outputs:
       instance: ${{ steps.set-variables.outputs.instance}}
