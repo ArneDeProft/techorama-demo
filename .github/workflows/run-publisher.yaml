@@ -52,10 +52,10 @@ jobs:
           echo ${{ github.event.pull_request.labels[0] }}
           echo ${{ github.event.pull_request.labels[1] }}
           echo "::set-output name=instance::$value"
-          echo "instance=${{ value }}" >> "$GITHUB_OUTPUT"
+          echo "instance=$(value)" >> "$GITHUB_OUTPUT"
       id: set-variables1
     outputs:
-      instance: ${{ steps.set-variables.set-variables1.outputs.instance }}
+      instance: ${{ steps.set-variables1.outputs.instance }}
        
   get-commit:
     runs-on: ubuntu-latest
