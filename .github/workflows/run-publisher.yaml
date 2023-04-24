@@ -52,7 +52,6 @@ jobs:
           echo ${{ github.event.pull_request.labels[0] }}
           echo ${{ github.event.pull_request.labels[1] }}
           echo "::set-output name=instance::$value"
-          echo "::set-output name=instance::b"
       id: set-variables
     outputs:
       instance: ${{ steps.set-variables.outputs.instance}}
@@ -66,7 +65,6 @@ jobs:
         id: commit
         run: |
           echo "::set-output name=commit_id::${{ github.sha }}"
-          echo ${{ needs.set-variables.outputs.instance }}
     outputs:
       commit_id: ${{ steps.commit.outputs.commit_id }}
   
