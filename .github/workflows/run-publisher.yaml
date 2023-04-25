@@ -4,7 +4,7 @@ on:
   # Triggers the workflow on pull request events but only for the main branch
   pull_request:
     branches: [main]
-    types: [closed, labeled]
+    types: [closed]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -36,24 +36,18 @@ jobs:
     steps:
     - run: |
           labels="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
-          echo "$labels"
           
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             value="${{ github.event.inputs.APIM_INSTANCE }}"
             echo "The value in first if: $value"
           elif [[ $labels =~ ("instance-a") ]]; then
             value="a"
-            echo "The value in second if: $value"
           elif [[ $labels =~ ("instance-b") ]]; then
             value="b"
-            echo "The value in third if: $value"
           elif [[ $labels =~ ("instance-group") ]]; then
             value="group"
-            echo "The value in fourth if: $value"
           fi
-            echo "The value is: $value"
             echo "instance=$(echo $value)" >> $GITHUB_OUTPUT
-            echo ${{ steps.set-variables1.outputs.instance }}       
       shell: bash
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -62,36 +56,6 @@ jobs:
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
     outputs:
       instance: ${{ steps.set-variables1.outputs.instance }}
-  
-  via-python: 
-    runs-on: ubuntu-latest
-    steps:
-    - name: Display the path
-      run: |    
-        apiminstance = "";
-        if core.getInput('APIM_INSTANCE') != "":
-          match core.getInput('APIM_INSTANCE')
-            case "a":
-              apiminstance = "a";
-            case "b":
-              apiminstance = "b";
-            case "group":
-              apiminstance = "group";
-        else:
-          labels = context.payload['pull_request']['labels'];
-          for label in labels:
-            if label['name'] == 'instance-a':
-              apiminstance = "a";
-              break;
-            elif label['name'] == 'instance-b':
-              apiminstance = "b";
-              break;
-            elif label['name'] == 'instance-group':
-              apiminstance = "group";
-              break;
-        print('value is:', apiminstance);
-      shell: python
-
        
   get-commit:
     runs-on: ubuntu-latest
