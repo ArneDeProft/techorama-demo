@@ -41,13 +41,13 @@ jobs:
         if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
           value="${{ github.event.inputs.APIM_INSTANCE }}"
           echo "The value in first if: $value"
-        elif contains(github.event.pull_request.labels.*.name, 'instance-a'); then
+        elif [[ "${{ github.event.pull_request.labels.*.name }}" =~ "instance-a" ]]; then
           value="a"
           echo "The value in second if: $value"
-        elif contains(github.event.pull_request.labels.*.name, 'instance-b'); then
+        elif [[ "${{ github.event.pull_request.labels.*.name }}" =~ "instance-b" ]]; then
           value="b"
           echo "The value in third if: $value"
-        elif contains(github.event.pull_request.labels.*.name, 'instance-group'); then
+        elif [[ "${{ github.event.pull_request.labels.*.name }}" =~ "instance-group" ]]; then
           value="group"
           echo "The value in fourth if: $value"
         fi
