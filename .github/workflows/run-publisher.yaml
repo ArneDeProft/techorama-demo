@@ -4,7 +4,7 @@ on:
   # Triggers the workflow on pull request events but only for the main branch
   pull_request:
     branches: [main]
-    types: [closed, labeled]
+    types: [closed]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -34,27 +34,28 @@ jobs:
   set-variables:
     runs-on: ubuntu-latest
     steps:
-    - name: Get input or label value
-      run: |
-        value="a"
-        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-          value="${{ github.event.inputs.APIM_INSTANCE }}"
-        elif "instance-a" in github.event.pull_request.labels.*.name; then
-          value="a"
-        elif "instance-b" in github.event.pull_request.labels.*.name; then
-          value="b"
-        elif "instance-group" in github.event.pull_request.labels.*.name; then
-          value="group"
-        fi
-          echo "The value is: $value"
-          echo ${{ github.event_name }}
-          echo ${{ github.event.pull_request.labels }}
-          echo ${{ github.event.pull_request.labels[0] }}
-          echo ${{ github.event.pull_request.labels[1] }}
-          echo "::set-output name=instance::$value"
-      id: set-variables
+    - run: |
+          labels="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
+          
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            value="${{ github.event.inputs.APIM_INSTANCE }}"
+            echo "The value in first if: $value"
+          elif [[ $labels =~ ("instance-a") ]]; then
+            value="a"
+          elif [[ $labels =~ ("instance-b") ]]; then
+            value="b"
+          elif [[ $labels =~ ("instance-group") ]]; then
+            value="group"
+          fi
+            echo "instance=$(echo $value)" >> $GITHUB_OUTPUT
+      shell: bash
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
     outputs:
-      instance: ${{ steps.set-variables.outputs.instance}}
+      instance: ${{ steps.set-variables1.outputs.instance }}
        
   get-commit:
     runs-on: ubuntu-latest
@@ -65,9 +66,11 @@ jobs:
         id: commit
         run: |
           echo "::set-output name=commit_id::${{ github.sha }}"
-          echo ${{ needs.set-variables.outputs.instance }}
+          echo "instance=${{ needs.set-variables.outputs.instance }}" >> $GITHUB_OUTPUT
     outputs:
       commit_id: ${{ steps.commit.outputs.commit_id }}
+      instance: ${{ steps.commit.outputs.instance }}
+
   
   #Publish without Commit ID. Publishes all artifacts that reside in the artifacts forlder
   Push-Changes-To-APIM-Dev-Without-Commit-ID:
@@ -75,7 +78,7 @@ jobs:
     needs: get-commit
     uses: ./.github/workflows/run-publisher-with-env.yaml
     with:
-      API_MANAGEMENT_ENVIRONMENT: ${{ needs.set-variables.outputs.instance }}
+      API_MANAGEMENT_ENVIRONMENT: ${{ needs.get-commit.outputs.instance }}
       API_MANAGEMENT_SERVICE_OUTPUT_FOLDER_PATH: apimartifacts # change this to the artifacts folder
     secrets: inherit
 
@@ -84,7 +87,7 @@ jobs:
     needs: [get-commit]
     uses: ./.github/workflows/run-publisher-with-env.yaml
     with:
-      API_MANAGEMENT_ENVIRONMENT: ${{ needs.set-variables.outputs.instance }}
+      API_MANAGEMENT_ENVIRONMENT: ${{ needs.get-commit.outputs.instance }}
       CONFIGURATION_YAML_PATH: configuration.prod.yaml # make sure the file is available at the root
       API_MANAGEMENT_SERVICE_OUTPUT_FOLDER_PATH: apimartifacts # change this to the artifacts folder
       COMMIT_ID: ${{ needs.get-commit.outputs.commit_id }}
@@ -95,7 +98,7 @@ jobs:
     needs: [get-commit, Push-Changes-To-APIM-Dev-Without-Commit-ID]
     uses: ./.github/workflows/run-publisher-with-env.yaml
     with:
-      API_MANAGEMENT_ENVIRONMENT: ${{ needs.set-variables.outputs.instance }}
+      API_MANAGEMENT_ENVIRONMENT: ${{ needs.get-commit.outputs.instance }}
       CONFIGURATION_YAML_PATH: configuration.prod.yaml # make sure the file is available at the root
       API_MANAGEMENT_SERVICE_OUTPUT_FOLDER_PATH: apimartifacts # change this to the artifacts folder
     secrets: inherit
