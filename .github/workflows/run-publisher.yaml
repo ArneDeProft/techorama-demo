@@ -37,34 +37,29 @@ jobs:
     - run: |
           labels="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
           echo "$labels"
+          
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            value="${{ github.event.inputs.APIM_INSTANCE }}"
+            echo "The value in first if: $value"
+          elif [[ $labels =~ ("instance-a") ]]; then
+            value="a"
+            echo "The value in second if: $value"
+          elif [[ $labels =~ ("instance-b") ]]; then
+            value="b"
+            echo "The value in third if: $value"
+          elif [[ $labels =~ ("instance-group") ]]; then
+            value="group"
+            echo "The value in fourth if: $value"
+          fi
+            echo "The value is: $value"
+            echo "instance=$(echo $value)" >> $GITHUB_OUTPUT
+            echo ${{ steps.set-variables1.outputs.instance }}       
       shell: bash
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
           REPO_NAME: ${{ github.event.repository.name }}
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
-    - name: Get input or label value      
-      id: set-variables1
-      run: |
-        value="a"
-        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-          value="${{ github.event.inputs.APIM_INSTANCE }}"
-          echo "The value in first if: $value"
-        elif [[ ${github.event.pull_request.labels.*.name} =~ ("instance-a") ]]; then
-          value="a"
-          echo "The value in second if: $value"
-        elif [[ ${github.event.pull_request.labels.*.name} =~ ("instance-b") ]]; then
-          value="b"
-          echo "The value in third if: $value"
-        elif [[ ${github.event.pull_request.labels.*.name} =~ ("instance-group") ]]; then
-          value="group"
-          echo "The value in fourth if: $value"
-        fi
-          echo "The value is: $value"
-
-          echo "instance=$(echo $value)" >> $GITHUB_OUTPUT
-          echo ${{ steps.set-variables1.outputs.instance }}
-
     outputs:
       instance: ${{ steps.set-variables1.outputs.instance }}
   
