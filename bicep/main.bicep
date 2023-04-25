@@ -15,6 +15,7 @@ var ehName = 'eh-${resourceSuffix}'
 var appNameLA = 'appnamela-${resourceSuffix}'
 var appNameCI = 'appnameci-${resourceSuffix}'
 var dbwName = 'dbw-${resourceSuffix}'
+var kvName = 'kv-${resourceSuffix}'
 
 module ehModule 'eventhub/eventhub.bicep'  = {
   name: 'ehDeploy'
@@ -61,4 +62,15 @@ module dbwModule 'databricks/databricks.bicep'  = {
     location: location
   }
   
+}
+
+
+module kvModule 'keyvault/keyvault.bicep'  = {
+  name: 'kvDeploy'
+  scope: resourceGroup(ResourceGroup)
+  params: {
+    keyVaultName: kvName
+    location: location
+  }
+  dependsOn:[dbwModule]
 }
