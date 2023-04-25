@@ -34,7 +34,9 @@ jobs:
   set-variables:
     runs-on: ubuntu-latest
     steps:
-    - run: |
+    - name: set-variables1
+      id: set-variables1
+      run: |
           labels="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
           
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
