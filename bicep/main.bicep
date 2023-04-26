@@ -15,8 +15,8 @@ var ehName = 'eh-${resourceSuffix}'
 var appNameLA = 'appnamela-${resourceSuffix}'
 var appNameCI = 'appnameci-${resourceSuffix}'
 var dbwName = 'dbw-${resourceSuffix}'
-var kvName = 'kv-${resourceSuffix}'
-var adxName = 'adx-${resourceSuffix}'
+var kvName = substring('kv-${resourceSuffix}-a',0,22)
+var adxName = substring('adx-${resourceSuffix}',0,22)
 
 module ehModule 'eventhub/eventhub.bicep'  = {
   name: 'ehDeploy'

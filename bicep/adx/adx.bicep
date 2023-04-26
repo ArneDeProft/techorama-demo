@@ -12,10 +12,10 @@ resource adx 'Microsoft.Kusto/clusters@2022-12-29' = {
   name: clustername
   location: location
   sku: {
-    capacity: 1
-    name: 'Dev(No SLA)_Standard_E2a_v4'
-    tier: 'standard'
-  }
+    name: 'Standard_E2ads_v5'
+    tier: 'Standard'
+    capacity: 2
+}
   identity: { 
     type: 'SystemAssigned'
   }
@@ -29,7 +29,7 @@ resource adx 'Microsoft.Kusto/clusters@2022-12-29' = {
     optimizedAutoscale: {
       isEnabled: true
       maximum: 2
-      minimum: 1
+      minimum: 2
       version: 1
     }
     publicIPType: 'ipv4'
@@ -43,10 +43,7 @@ resource adxdb 'Microsoft.Kusto/clusters/databases@2022-12-29' = {
   name: adxdbname
   location: location
   kind: 'ReadWrite'
-  properties: {
-    hotCachePeriod: '7'
-    softDeletePeriod: '30'
-  }
   parent: adx
+
   // For remaining properties, see clusters/databases objects
 }
