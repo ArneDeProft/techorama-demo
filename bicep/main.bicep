@@ -17,6 +17,7 @@ var appNameCI = 'appnameci-${resourceSuffix}'
 var dbwName = 'dbw-${resourceSuffix}'
 var kvName = substring('kv-${resourceSuffix}-a',0,22)
 var adxName = substring('adx-${resourceSuffix}',0,22)
+var adlsName = substring(replace('adls${resourceSuffix}','-',''),0,23)
 
 module ehModule 'eventhub/eventhub.bicep'  = {
   name: 'ehDeploy'
@@ -71,6 +72,17 @@ module kvModule 'keyvault/keyvault.bicep'  = {
   scope: resourceGroup(ResourceGroup)
   params: {
     keyVaultName: kvName
+    location: location
+  }
+  dependsOn:[dbwModule]
+}
+
+
+module adlsModule 'adls/adls.bicep'  = {
+  name: 'adlsDeploy'
+  scope: resourceGroup(ResourceGroup)
+  params: {
+    adlsName: adlsName
     location: location
   }
   dependsOn:[dbwModule]
