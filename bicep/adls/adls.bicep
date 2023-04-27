@@ -1,6 +1,6 @@
 param location string 
 param containerName string = 'databricks'
-param directoryName string = 'checkpoints\\TechoramaTst1KustoEvents'
+param directoryName string = 'checkpoint'
 param adlsName string 
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
