@@ -15,7 +15,8 @@ var ehName = 'eh-${resourceSuffix}'
 var appNameLA = 'appnamela-${resourceSuffix}'
 var appNameCI = 'appnameci-${resourceSuffix}'
 var dbwName = 'dbw-${resourceSuffix}'
-var kvName = 'kv-${resourceSuffix}'
+var kvName = substring('kv-${resourceSuffix}-a',0,22)
+var adxName = substring('adx-${resourceSuffix}',0,22)
 
 module ehModule 'eventhub/eventhub.bicep'  = {
   name: 'ehDeploy'
@@ -73,4 +74,16 @@ module kvModule 'keyvault/keyvault.bicep'  = {
     location: location
   }
   dependsOn:[dbwModule]
+}
+
+
+module adxModule 'adx/adx.bicep'  = {
+  name: 'adxDeploy'
+  scope: resourceGroup(ResourceGroup)
+  params: {
+    clustername: adxName
+    location: location
+    adxdbname: 'techorama'
+  }
+  dependsOn:[ehModule]
 }
