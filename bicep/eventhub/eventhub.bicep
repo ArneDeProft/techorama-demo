@@ -56,6 +56,17 @@ resource eventHubAuthorizationRule 'Microsoft.EventHub/namespaces/authorizationR
   }
 }
 
+resource eventHubAuthorizationRuleDatabricks 'Microsoft.EventHub/namespaces/eventhubs/authorizationRules@2022-01-01-preview' = {
+  name: 'eventHubAuthorizationRuleDatabricks'
+  parent: eventHub
+  properties: {
+    rights: [
+      'Listen'
+    ]
+  }
+}
+
+
 var eventHubNamespaceConnectionString = listKeys(eventHubAuthorizationRule.id, eventHubAuthorizationRule.apiVersion).primaryConnectionString
 output conn string = eventHubNamespaceConnectionString
 
