@@ -4,7 +4,7 @@ param ehName string
 @description('Specifies the Azure location for all resources.')
 param location string = resourceGroup().location
 
-param consumerGroups array = ['thirdpartyConsumer','sentinelConsumer','generelLogsConsumer']
+param consumerGroups array = ['thirdpartyConsumer','sentinelConsumer','generelLogsConsumer','personalDataConsumer']
 
 
 @description('Specifies the messaging tier for Event Hub Namespace.')

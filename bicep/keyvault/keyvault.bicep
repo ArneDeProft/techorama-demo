@@ -45,7 +45,15 @@ resource kv 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
     enabledForDiskEncryption: enabledForDiskEncryption
     enabledForTemplateDeployment: enabledForTemplateDeployment
     tenantId: tenantId
-    accessPolicies: []
+    accessPolicies: [
+      {
+        objectId: '4e8ce729-fc76-4d2c-bc52-a595366b4950'
+        tenantId: tenantId
+        permissions:{
+          secrets:['get','list']
+        }
+      }
+    ]
     sku: {
       name: skuName
       family: 'A'
