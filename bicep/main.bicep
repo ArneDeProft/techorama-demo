@@ -6,7 +6,6 @@ param environment string
 var location = resourceGroup().location
 param storageAccountName string
 
-
 var resourceSuffix = '${environment}-${location}-contoso001'
 
 // Resource Names
@@ -18,6 +17,12 @@ var dbwName = 'dbw-${resourceSuffix}'
 var kvName = substring('kv-${resourceSuffix}-a',0,22)
 var adxName = substring('adx-${resourceSuffix}',0,22)
 var adlsName = substring(replace('adls${resourceSuffix}','-',''),0,23)
+
+resource kv 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
+  name: kvName
+  scope: resourceGroup(subscription().subscriptionId, ResourceGroup)
+}
+
 
 module ehModule 'eventhub/eventhub.bicep'  = {
   name: 'ehDeploy'
@@ -66,8 +71,8 @@ module dbwModule 'databricks/databricks.bicep'  = {
   
 }
 
-
-module kvModule 'keyvault/keyvault.bicep'  = {
+/*
+module kvModule 'keyvault/keyvault.bicep' = {
   name: 'kvDeploy'
   scope: resourceGroup(ResourceGroup)
   params: {
@@ -76,6 +81,8 @@ module kvModule 'keyvault/keyvault.bicep'  = {
   }
   dependsOn:[dbwModule]
 }
+*/
+
 
 
 module adlsModule 'adls/adls.bicep'  = {
@@ -84,6 +91,7 @@ module adlsModule 'adls/adls.bicep'  = {
   params: {
     adlsName: adlsName
     location: location
+    principalId: kv.getSecret('ADBappIP')
   }
   dependsOn:[dbwModule]
 }

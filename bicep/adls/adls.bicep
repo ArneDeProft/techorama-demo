@@ -2,6 +2,9 @@ param location string
 param containerName string = 'databricks'
 param directoryName string = 'checkpoint'
 param adlsName string 
+@secure()
+param principalId string
+param roleDefinitionID string = 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: adlsName
@@ -22,6 +25,20 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     }
   }
 }
+
+
+
+
+resource symbolicname 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(principalId, roleDefinitionID, storageAccount.name)
+  scope: storageAccount
+  properties: {
+    principalId: principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionID)
+  }
+}
+
 /*
 resource createDirectory 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   name: 'createDirectory'
