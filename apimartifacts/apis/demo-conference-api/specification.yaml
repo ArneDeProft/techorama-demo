@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: Demo Conference API2
+  title: Demo Conference API5
   description: 'A sample API with information related to a technical conference.  The available resources  include *Speakers*, *Sessions* and *Topics*.  A single write operation is available to provide  feedback on a session.'
   version: '1.0'
 servers:
