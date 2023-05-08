@@ -9,9 +9,21 @@
     - Policies are applied in the order of their appearance, from the top down.
 -->
 <policies>
-	<inbound />
+	<inbound>
+		<log-to-eventhub logger-id="mylogger-a">@{
+                return new JObject(
+                    new JProperty("EventTime", DateTime.UtcNow.ToString()),
+                    new JProperty("ServiceName", context.Deployment.ServiceName),
+                    new JProperty("RequestId", context.RequestId),
+                    new JProperty("RequestIp", context.Request.IpAddress),
+                    new JProperty("OperationName", context.Operation.Name),
+                    new JProperty("RequestBody", context.Request.Body)
+                ).ToString();
+            }</log-to-eventhub>
+	</inbound>
 	<backend>
 		<forward-request />
 	</backend>
 	<outbound />
+	<on-error />
 </policies>
